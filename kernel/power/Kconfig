@@ -108,7 +108,7 @@ config PM_SLEEP
 	select SRCU
 
 config PM_SLEEP_SMP
-	def_bool y
+	def_bool y if !PREEMPT_RT_BASE
 	depends on SMP
 	depends on ARCH_SUSPEND_POSSIBLE || ARCH_HIBERNATION_POSSIBLE
 	depends on PM_SLEEP
@@ -320,3 +320,8 @@ config WAKEUP_IRQ_DEBUG
 	---help---
 	  This enables debug information about wakeup interrupts using
 	  sysfs (/sys/kernel/).
+
+config	BOEFFLA_WL_BLOCKER
+		bool "Boeffla generic wakelock blocker driver"
+		depends on PM
+		default y
