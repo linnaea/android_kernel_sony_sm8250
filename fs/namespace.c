@@ -1678,6 +1678,7 @@ int path_umount(struct path *path, int flags)
 	mntput_no_expire(mnt);
 	return ret;
 }
+
 /*
  * Now umount can handle mount points as well as block devices.
  * This is important for filesystems which use unnamed block devices.
@@ -1685,7 +1686,6 @@ int path_umount(struct path *path, int flags)
  * We now support a flag for forced unmount like the other 'big iron'
  * unixes. Our API is identical to OSF/1 to avoid making a mess of AMD
  */
-
 int ksys_umount(char __user *name, int flags)
 {
 	struct path path;
