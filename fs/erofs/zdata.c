@@ -177,43 +177,6 @@ static inline void z_erofs_onlinepage_endio(struct page *page)
 
 #define Z_EROFS_ONSTACK_PAGES		32
 
-/**
- * attach_page_private - Attach private data to a page.
- * @page: Page to attach data to.
- * @data: Data to attach to page.
- *
- * Attaching private data to a page increments the page's reference count.
- * The data must be detached before the page will be freed.
- */
-static inline void attach_page_private(struct page *page, void *data)
-{
-	get_page(page);
-	set_page_private(page, (unsigned long)data);
-	SetPagePrivate(page);
-}
-
-/**
- * detach_page_private - Detach private data from a page.
- * @page: Page to detach data from.
- *
- * Removes the data that was previously attached to the page and decrements
- * the refcount on the page.
- *
- * Return: Data that was attached to the page.
- */
-static inline void *detach_page_private(struct page *page)
-{
-	void *data = (void *)page_private(page);
-
-	if (!PagePrivate(page))
-		return NULL;
-	ClearPagePrivate(page);
-	set_page_private(page, 0);
-	put_page(page);
-
-	return data;
-}
-
 /*
  * since pclustersize is variable for big pcluster feature, introduce slab
  * pools implementation for different pcluster sizes.
@@ -396,21 +359,6 @@ static void erofs_destroy_percpu_workers(void)
 			kthread_destroy_worker(worker);
 	}
 	kfree(z_erofs_pcpu_workers);
-}
-
-void sched_set_normal(struct task_struct *p, int nice)
-{
-	struct sched_attr attr = {
-		.sched_policy = SCHED_NORMAL,
-		.sched_nice = nice,
-	};
-	WARN_ON_ONCE(sched_setattr_nocheck(p, &attr) != 0);
-}
-
-void sched_set_fifo_low(struct task_struct *p)
-{
-	struct sched_param sp = { .sched_priority = 1 };
-	WARN_ON_ONCE(sched_setscheduler_nocheck(p, SCHED_FIFO, &sp) != 0);
 }
 
 static struct kthread_worker *erofs_init_percpu_worker(int cpu)
